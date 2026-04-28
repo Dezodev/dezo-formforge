@@ -1,0 +1,25 @@
+services:
+
+  # -------------------------------------------------------------------------
+  # Application PHP/Apache (via supervisor)
+  # -------------------------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        WWWUSER: ${WWWUSER:-1001}
+        WWWGROUP: ${WWWGROUP:-1001}
+    container_name: formforge_app
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8082}:80"
+    volumes:
+      - .:/var/www/html
+    environment:
+      APP_ENV: local
+
+networks:
+  default:
+    external: true
+    name: scoobydoo

@@ -9,7 +9,7 @@ class ContactForm extends BaseForm
 {
     public string $site = 'dezo';
     public string $slug = 'contact';
-    public string $title = 'Formulaire de contact';
+    public string $title = '[Dezodev] Formulaire de contact';
     public string $notifyEmail = 'hello@dezo.dev';
 
     public function schema(): array

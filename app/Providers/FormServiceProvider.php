@@ -10,6 +10,6 @@ class FormServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
-        FormRegistry::register(ContactForm::class);
+        FormRegistry::register('dezo', ContactForm::class);
     }
 }

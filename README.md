@@ -24,7 +24,7 @@ docker compose up -d --build
 
 L'application est disponible sur [http://localhost:8082](http://localhost:8082).
 
-Le formulaire d'exemple est accessible sur [http://localhost:8082/f/contact](http://localhost:8082/f/contact).
+Le formulaire d'exemple est accessible sur [http://localhost:8082/f/dezo/contact](http://localhost:8082/f/dezo/contact).
 
 > Le réseau Docker `scoobydoo` doit exister : `docker network create scoobydoo`
 
@@ -44,6 +44,7 @@ use Filament\Forms\Components\TextInput;
 
 class ContactForm extends BaseForm
 {
+    public string $site        = 'dezo';
     public string $slug        = 'contact';
     public string $title       = 'Formulaire de contact';
     public string $notifyEmail = 'hello@dezo.dev';
@@ -62,10 +63,10 @@ class ContactForm extends BaseForm
 **2. Enregistrer dans `app/Providers/FormServiceProvider.php` :**
 
 ```php
-FormRegistry::register(ContactForm::class);
+FormRegistry::register('monsite', ContactForm::class);
 ```
 
-**3. Le formulaire est accessible à `/f/contact`.**
+**3. Le formulaire est accessible à `/f/monsite/contact`.**
 
 ---
 
@@ -73,7 +74,7 @@ FormRegistry::register(ContactForm::class);
 
 ```html
 <iframe
-  src="https://forms.dezo.dev/f/contact?bg=f5f5f5&color=222222"
+  src="https://forms.dezo.dev/f/dezo/contact?bg=f5f5f5&color=222222"
   id="formforge-contact"
   style="width:100%; border:none; min-height:400px;"
   loading="lazy"
@@ -147,7 +148,7 @@ app/
 ├── Forms/
 │   ├── BaseForm.php          # Classe abstraite parente
 │   ├── FormInterface.php     # Interface
-│   ├── FormRegistry.php      # Registre slug → classe
+│   ├── FormRegistry.php      # Registre site/slug → classe
 │   └── ContactForm.php       # Exemple
 ├── Http/Controllers/
 │   └── FormController.php    # Route GET /f/{slug}

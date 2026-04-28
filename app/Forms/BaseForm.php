@@ -4,6 +4,7 @@ namespace App\Forms;
 
 abstract class BaseForm implements FormInterface
 {
+    public string $site;
     public string $slug;
     public string $title;
     public string $notifyEmail;

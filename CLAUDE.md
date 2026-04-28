@@ -147,6 +147,7 @@ Chaque formulaire est une classe PHP dans `app/Forms/` qui implémente `FormInte
 // app/Forms/ContactForm.php
 class ContactForm extends BaseForm
 {
+    public string $site = 'dezo';
     public string $slug = 'contact';
     public string $title = 'Formulaire de contact';
     public string $notifyEmail = 'hello@dezo.dev';
@@ -165,7 +166,7 @@ class ContactForm extends BaseForm
 ### URL d'intégration
 
 ```
-https://forms.dezo.dev/f/{slug}?bg=ffffff&color=333333
+https://forms.dezo.dev/f/{site}/{slug}?bg=ffffff&color=333333
 ```
 
 Paramètres query string :
@@ -176,7 +177,7 @@ Paramètres query string :
 
 ```html
 <iframe
-  src="https://forms.dezo.dev/f/contact?bg=f5f5f5&color=222222"
+  src="https://forms.dezo.dev/f/dezo/contact?bg=f5f5f5&color=222222"
   id="formforge-contact"
   style="width:100%; border:none; min-height:400px;"
   loading="lazy"
@@ -271,8 +272,8 @@ MAIL_FROM_NAME="FormForge"
 - [x] Installer Filament Forms standalone (`filament/forms`) sans le panel admin
 - [x] Configurer le layout minimal pour l'iframe (`resources/views/components/iframe-layout.blade.php`)
 - [x] Créer `FormInterface` et `BaseForm` (slug, title, notifyEmail, schema)
-- [x] Mettre en place le registre de formulaires (`FormRegistry`) qui mappe slug → classe
-- [x] Créer la route `GET /f/{slug}` qui charge et affiche le formulaire correspondant
+- [x] Mettre en place le registre de formulaires (`FormRegistry`) qui mappe site/slug → classe
+- [x] Créer la route `GET /f/{site}/{slug}` qui charge et affiche le formulaire correspondant
 
 ### Phase 2 — Composant Livewire
 
@@ -313,9 +314,10 @@ MAIL_FROM_NAME="FormForge"
 1. Créer une classe dans `app/Forms/` qui étend `BaseForm` :
 
 ```php
-// app/Forms/DevisForm.php
+// app/Forms/MonSite/DevisForm.php
 class DevisForm extends BaseForm
 {
+    public string $site = 'monsite';
     public string $slug = 'devis';
     public string $title = 'Demande de devis';
     public string $notifyEmail = 'contact@monsite.fr';
@@ -338,10 +340,10 @@ class DevisForm extends BaseForm
 2. Enregistrer la classe dans `app/Providers/FormServiceProvider.php` :
 
 ```php
-FormRegistry::register(DevisForm::class);
+FormRegistry::register('monsite', DevisForm::class);
 ```
 
-3. Le formulaire est accessible à l'URL `/f/devis`.
+3. Le formulaire est accessible à l'URL `/f/monsite/devis`.
 
 ---
 

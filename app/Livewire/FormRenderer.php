@@ -18,6 +18,9 @@ class FormRenderer extends Component implements HasForms
     use InteractsWithForms;
 
     #[Locked]
+    public string $formSite;
+
+    #[Locked]
     public string $formSlug;
 
     public array $data = [];
@@ -26,13 +29,14 @@ class FormRenderer extends Component implements HasForms
 
     public function mount(BaseForm $formDefinition): void
     {
+        $this->formSite = $formDefinition->site;
         $this->formSlug = $formDefinition->slug;
         $this->form->fill();
     }
 
     protected function getFormDefinition(): BaseForm
     {
-        return FormRegistry::resolve($this->formSlug);
+        return FormRegistry::resolve($this->formSite, $this->formSlug);
     }
 
     public function form(Schema $schema): Schema

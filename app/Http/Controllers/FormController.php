@@ -7,11 +7,11 @@ use Illuminate\Http\Request;
 
 class FormController extends Controller
 {
-    public function show(Request $request, string $slug)
+    public function show(Request $request, string $site, string $slug)
     {
-        abort_unless(FormRegistry::has($slug), 404);
+        abort_unless(FormRegistry::has($site, $slug), 404);
 
-        $form = FormRegistry::resolve($slug);
+        $form = FormRegistry::resolve($site, $slug);
 
         $bg    = $this->sanitizeHex($request->query('bg', 'ffffff'));
         $color = $this->sanitizeHex($request->query('color', '1a1a1a'));

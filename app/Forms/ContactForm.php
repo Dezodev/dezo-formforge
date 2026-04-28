@@ -7,6 +7,7 @@ use Filament\Forms\Components\TextInput;
 
 class ContactForm extends BaseForm
 {
+    public string $site = 'dezo';
     public string $slug = 'contact';
     public string $title = 'Formulaire de contact';
     public string $notifyEmail = 'hello@dezo.dev';

@@ -6,26 +6,26 @@ use InvalidArgumentException;
 
 class FormRegistry
 {
-    /** @var array<string, class-string<BaseForm>> */
+    /** @var array<string, array<string, class-string<BaseForm>>> */
     private static array $forms = [];
 
-    public static function register(string $class): void
+    public static function register(string $site, string $class): void
     {
         $instance = new $class();
-        static::$forms[$instance->slug] = $class;
+        static::$forms[$site][$instance->slug] = $class;
     }
 
-    public static function resolve(string $slug): BaseForm
+    public static function resolve(string $site, string $slug): BaseForm
     {
-        if (! isset(static::$forms[$slug])) {
-            throw new InvalidArgumentException("Formulaire introuvable : {$slug}");
+        if (! static::has($site, $slug)) {
+            throw new InvalidArgumentException("Formulaire introuvable : {$site}/{$slug}");
         }
 
-        return new static::$forms[$slug]();
+        return new static::$forms[$site][$slug]();
     }
 
-    public static function has(string $slug): bool
+    public static function has(string $site, string $slug): bool
     {
-        return isset(static::$forms[$slug]);
+        return isset(static::$forms[$site][$slug]);
     }
 }

@@ -7,7 +7,7 @@ Nouvelle soumission reçue le **{{ $date }}**.
 | Champ | Valeur |
 |:------|:-------|
 @foreach ($fields as $key => $value)
-| {{ ucfirst(str_replace('_', ' ', $key)) }} | {{ is_array($value) ? implode(', ', $value) : $value }} |
+| {{ ucfirst(str_replace('_', ' ', $key)) }} | {!! is_array($value) ? e(implode(', ', $value)) : str_replace(["\r\n", "\r", "\n"], '<br>', e($value)) !!} |
 @endforeach
 </x-mail::table>
 

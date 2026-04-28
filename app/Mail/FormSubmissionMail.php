@@ -31,7 +31,7 @@ class FormSubmissionMail extends Mailable
             markdown: 'mail.form-submission',
             with: [
                 'title'  => $this->formDefinition->title,
-                'fields' => $this->data,
+                'fields' => collect($this->data)->except('captcha')->all(),
                 'date'   => now()->format('d/m/Y à H:i'),
             ],
         );

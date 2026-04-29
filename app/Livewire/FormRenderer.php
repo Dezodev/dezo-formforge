@@ -9,6 +9,7 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -46,11 +47,22 @@ class FormRenderer extends Component implements HasForms
 
     public function submit(): void
     {
-        \Illuminate\Support\Facades\Log::info('submit() called', ['data' => $this->data]);
+        $key = 'form-submit:' . request()->ip();
+
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            $this->addError('rate_limit', 'Trop de tentatives. Veuillez réessayer dans quelques minutes.');
+            return;
+        }
+
+        RateLimiter::hit($key, 300);
 
         $this->form->validate();
 
         $definition = $this->getFormDefinition();
+
+        if (!filter_var($definition->notifyEmail, FILTER_VALIDATE_EMAIL)) {
+            return;
+        }
 
         Mail::to($definition->notifyEmail)
             ->send(new FormSubmissionMail($definition, $this->data));

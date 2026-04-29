@@ -109,9 +109,11 @@
 
     {{-- Redimensionnement automatique de l'iframe parente --}}
     <script>
+        // ancestorOrigins disponible sur Chromium/Safari, pas Firefox → fallback '*'
+        const targetOrigin = window.location.ancestorOrigins?.[0] ?? '*';
         function notifyResize() {
             const height = document.documentElement.scrollHeight;
-            window.parent.postMessage({ type: 'formforge:resize', height }, '*');
+            window.parent.postMessage({ type: 'formforge:resize', height }, targetOrigin);
         }
         new ResizeObserver(notifyResize).observe(document.body);
         notifyResize();

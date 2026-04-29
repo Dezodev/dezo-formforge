@@ -28,4 +28,10 @@ class FormRegistry
     {
         return isset(static::$forms[$site][$slug]);
     }
+
+    /** @return array<string, array<string, class-string<BaseForm>>> */
+    public static function all(): array
+    {
+        return static::$forms;
+    }
 }

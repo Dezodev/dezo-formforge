@@ -14,6 +14,10 @@
         *, *::before, *::after { box-sizing: border-box; }
 
         html, body {
+            overflow: hidden; /* masque la scrollbar sans contraindre le layout */
+        }
+
+        html, body {
             margin: 0;
             padding: 0;
             background: var(--ff-bg);
@@ -102,7 +106,7 @@
 </head>
 <body>
 
-    {{ $slot }}
+    <div id="ff-content">{{ $slot }}</div>
 
     @filamentScripts
     @livewireScripts
@@ -111,11 +115,39 @@
     <script>
         // ancestorOrigins disponible sur Chromium/Safari, pas Firefox → fallback '*'
         const targetOrigin = window.location.ancestorOrigins?.[0] ?? '*';
+        const content = document.getElementById('ff-content');
+
+        let rafId = null;
         function notifyResize() {
-            const height = document.documentElement.scrollHeight;
-            window.parent.postMessage({ type: 'formforge:resize', height }, targetOrigin);
+            if (rafId) cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(function () {
+                // Mesure le wrapper interne — indépendant du viewport de l'iframe
+                const style   = getComputedStyle(document.body);
+                const padding = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
+                const height  = Math.ceil(content.offsetHeight + padding);
+                window.parent.postMessage({ type: 'formforge:resize', height }, targetOrigin);
+            });
         }
-        new ResizeObserver(notifyResize).observe(document.body);
+
+        // ResizeObserver : changements de taille du contenu
+        new ResizeObserver(notifyResize).observe(content);
+
+        // MutationObserver : mises à jour DOM asynchrones de Livewire
+        new MutationObserver(notifyResize).observe(content, {
+            subtree: true,
+            childList: true,
+        });
+
+        // Hook Livewire 4 : déclenché après chaque mise à jour DOM (ex. form → succès)
+        document.addEventListener('livewire:initialized', function () {
+            Livewire.hook('commit', function ({ succeed }) {
+                succeed(function () { notifyResize(); });
+            });
+        });
+
+        // Après chargement complet (Filament/Livewire peuvent finir de rendre)
+        window.addEventListener('load', notifyResize);
+
         notifyResize();
     </script>
 </body>

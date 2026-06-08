@@ -43,7 +43,7 @@ class FormEmbedCode extends Command
 <iframe
   src="{$url}"
   id="{$iframeId}"
-  style="width:100%; border:none; min-height:400px;"
+  style="width:100%; border:none; height:400px; transition:height 0.3s ease;"
   loading="lazy"
 ></iframe>
 

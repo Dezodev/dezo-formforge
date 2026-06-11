@@ -2,6 +2,7 @@
 
 namespace App\Forms;
 
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 
@@ -21,6 +22,15 @@ class ContactForm extends BaseForm
             TextInput::make('email')
                 ->label('Email')
                 ->email()
+                ->required(),
+            Select::make('subject')
+                ->label('Sujet')
+                ->options([
+                    'collaboration' => 'Collaboration',
+                    'article'       => 'Retour sur un article',
+                    'question'      => 'Question technique',
+                    'autre'         => 'Autre',
+                ])
                 ->required(),
             Textarea::make('message')
                 ->label('Message')

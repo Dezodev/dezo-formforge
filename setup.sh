@@ -5,11 +5,11 @@ set -euo pipefail
 
 # ── Configuration ──────────────────────────────────────────────────────────────
 REPO_URL="https://github.com/Dezodev/dezo-formforge.git"
-APP_DIR="/home/<hestia_user>/web/forms.dezo.dev/public_html"   # à adapter
+APP_DIR="/home/Jailbird0885/web/forms.dezo.dev/public_html"   # à adapter
 PHP_BIN="/usr/bin/php8.4"
 COMPOSER_BIN="$(command -v composer 2>/dev/null || true)"
 PNPM_BIN="$(command -v pnpm 2>/dev/null || echo '/usr/local/bin/pnpm')"
-PHP_USER="<hestia_user>"    # utilisateur HestiaCP propriétaire du site
+PHP_USER="Jailbird0885"    # utilisateur HestiaCP propriétaire du site
 PHP_GROUP="www-data"
 # ──────────────────────────────────────────────────────────────────────────────
 

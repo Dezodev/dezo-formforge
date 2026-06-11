@@ -10,16 +10,16 @@ FormForge permet de définir des formulaires en PHP (classe + schéma), de les h
 
 ## Stack technique
 
-| Composant | Choix | Raison |
-|---|---|---|
-| Framework | Laravel (dernière version LTS) | Base du projet |
-| Rendu formulaire | Filament Forms standalone + Livewire | Schéma PHP → HTML auto, sans panel admin |
-| Captcha | Cloudflare Turnstile | Gratuit, invisible, compatible iframe |
-| Email | Laravel Mail (SMTP configurable) | Simple, pas de dépendance externe |
-| Front | Alpine.js (inclus avec Livewire) | Au plus simple, pas de Vue/React |
-| Intégration | `<iframe>` | Isolation CSS, pas de conflits JS, hauteur via postMessage |
-| Runtime (dev) | PHP 8.4-Apache + Docker | Cohérent avec les autres projets |
-| Gestionnaire de paquets JS | pnpm | Cohérent avec les autres projets |
+| Composant                  | Choix                                | Raison                                                     |
+| -------------------------- | ------------------------------------ | ---------------------------------------------------------- |
+| Framework                  | Laravel (dernière version LTS)       | Base du projet                                             |
+| Rendu formulaire           | Filament Forms standalone + Livewire | Schéma PHP → HTML auto, sans panel admin                   |
+| Captcha                    | Cloudflare Turnstile                 | Gratuit, invisible, compatible iframe                      |
+| Email                      | Laravel Mail (SMTP configurable)     | Simple, pas de dépendance externe                          |
+| Front                      | Alpine.js (inclus avec Livewire)     | Au plus simple, pas de Vue/React                           |
+| Intégration                | `<iframe>`                           | Isolation CSS, pas de conflits JS, hauteur via postMessage |
+| Runtime (dev)              | PHP 8.4-Apache + Docker              | Cohérent avec les autres projets                           |
+| Gestionnaire de paquets JS | pnpm                                 | Cohérent avec les autres projets                           |
 
 ---
 
@@ -45,21 +45,26 @@ La stack Docker est identique aux projets `yemv-www` et `zone-cine-www`.
 
 ```yaml
 services:
-  app:
-    build: { context: ., dockerfile: Dockerfile, args: { WWWUSER: 1001, WWWGROUP: 1001 } }
-    container_name: formforge_app
-    restart: unless-stopped
-    ports:
-      - "${APP_PORT:-8082}:80"
-    volumes:
-      - .:/var/www/html
-    environment:
-      APP_ENV: local
+    app:
+        build:
+            {
+                context: .,
+                dockerfile: Dockerfile,
+                args: { WWWUSER: 1001, WWWGROUP: 1001 },
+            }
+        container_name: formforge_app
+        restart: unless-stopped
+        ports:
+            - "${APP_PORT:-8082}:80"
+        volumes:
+            - .:/var/www/html
+        environment:
+            APP_ENV: local
 
 networks:
-  default:
-    external: true
-    name: scoobydoo
+    default:
+        external: true
+        name: scoobydoo
 ```
 
 > Le réseau `scoobydoo` est le réseau Docker partagé entre tous les projets sur le VPS de développement.
@@ -90,39 +95,30 @@ Deux scripts bash gèrent le cycle de vie, à la racine du projet.
 
 ### `setup.sh` — Premier déploiement
 
-| Étape | Action |
-|---|---|
-| 0 | Vérification des prérequis (git, php, composer, pnpm) |
-| 1 | `git clone` du dépôt dans `APP_DIR` |
-| 2 | Création du `.env` depuis `.env.example` + pause pour édition manuelle |
-| 3 | `chown`/`chmod` pour HestiaCP (`PHP_USER:www-data`, storage 775) |
-| 4 | `composer install --no-dev --optimize-autoloader` |
-| 5 | `php artisan key:generate` |
-| 6 | `pnpm install && pnpm run build` |
-| 7 | `php artisan optimize` |
+| Étape | Action                                                                 |
+| ----- | ---------------------------------------------------------------------- |
+| 0     | Vérification des prérequis (git, php, composer, pnpm)                  |
+| 1     | `git clone` du dépôt dans `APP_DIR`                                    |
+| 2     | Création du `.env` depuis `.env.example` + pause pour édition manuelle |
+| 3     | `chown`/`chmod` pour HestiaCP (`PHP_USER:www-data`, storage 775)       |
+| 4     | `composer install --no-dev --optimize-autoloader`                      |
+| 5     | `php artisan key:generate`                                             |
+| 6     | `pnpm install && pnpm run build`                                       |
+| 7     | `php artisan optimize`                                                 |
 
 > Pas de migrations ni de Supervisor en v1 (sans base de données, sans queue worker).
 
-**Variables à adapter dans `setup.sh` :**
-
-```bash
-REPO_URL="https://github.com/Dezodev/dezo-formforge.git"
-APP_DIR="/home/<hestia_user>/web/forms.dezo.dev/public_html"
-PHP_BIN="/usr/bin/php8.4"
-PHP_USER="<hestia_user>"
-```
-
 ### `deploy.sh` — Mises à jour
 
-| Étape | Action |
-|---|---|
-| 1 | `git pull` |
-| 2 | `php artisan down` (mode maintenance) |
-| 3 | `composer install --no-dev` |
-| 4 | `pnpm install && pnpm run build` (sauf `--skip-assets`) |
-| 5 | `php artisan optimize:clear && optimize` |
-| 6 | Correction des permissions |
-| 7 | `php artisan up` |
+| Étape | Action                                                  |
+| ----- | ------------------------------------------------------- |
+| 1     | `git pull`                                              |
+| 2     | `php artisan down` (mode maintenance)                   |
+| 3     | `composer install --no-dev`                             |
+| 4     | `pnpm install && pnpm run build` (sauf `--skip-assets`) |
+| 5     | `php artisan optimize:clear && optimize`                |
+| 6     | Correction des permissions                              |
+| 7     | `php artisan up`                                        |
 
 **Options disponibles :**
 
@@ -138,6 +134,7 @@ PHP_USER="<hestia_user>"
 ### Définition d'un formulaire
 
 Chaque formulaire est une classe PHP dans `app/Forms/` qui implémente `FormInterface` et définit :
+
 - un **slug** unique (utilisé dans l'URL)
 - un **titre**
 - le **destinataire email** des notifications
@@ -170,6 +167,7 @@ https://forms.dezo.dev/f/{site}/{slug}?bg=ffffff&color=333333
 ```
 
 Paramètres query string :
+
 - `bg` : couleur de fond (hex sans `#`, défaut `ffffff`)
 - `color` : couleur du texte (hex sans `#`, défaut `1a1a1a`)
 
@@ -177,19 +175,20 @@ Paramètres query string :
 
 ```html
 <iframe
-  src="https://forms.dezo.dev/f/dezo/contact?bg=f5f5f5&color=222222"
-  id="formforge-contact"
-  style="width:100%; border:none; min-height:400px;"
-  loading="lazy"
+    src="https://forms.dezo.dev/f/dezo/contact?bg=f5f5f5&color=222222"
+    id="formforge-contact"
+    style="width:100%; border:none; min-height:400px;"
+    loading="lazy"
 ></iframe>
 
 <script>
-  window.addEventListener('message', function(e) {
-    if (e.origin !== 'https://forms.dezo.dev') return;
-    if (e.data?.type === 'formforge:resize') {
-      document.getElementById('formforge-contact').style.height = e.data.height + 'px';
-    }
-  });
+    window.addEventListener("message", function (e) {
+        if (e.origin !== "https://forms.dezo.dev") return;
+        if (e.data?.type === "formforge:resize") {
+            document.getElementById("formforge-contact").style.height =
+                e.data.height + "px";
+        }
+    });
 </script>
 ```
 
@@ -201,15 +200,15 @@ Après chaque rendu Livewire, le composant envoie la hauteur réelle via `postMe
 
 ## Champs supportés
 
-| Type Filament | Rendu HTML |
-|---|---|
-| `TextInput` | `<input type="text">` / `type="email"` / `type="tel"` |
-| `Textarea` | `<textarea>` |
-| `Select` | `<select>` |
-| `Checkbox` | `<input type="checkbox">` |
-| `CheckboxList` | Liste de checkboxes |
-| `Radio` | `<input type="radio">` |
-| `DatePicker` | `<input type="date">` |
+| Type Filament  | Rendu HTML                                            |
+| -------------- | ----------------------------------------------------- |
+| `TextInput`    | `<input type="text">` / `type="email"` / `type="tel"` |
+| `Textarea`     | `<textarea>`                                          |
+| `Select`       | `<select>`                                            |
+| `Checkbox`     | `<input type="checkbox">`                             |
+| `CheckboxList` | Liste de checkboxes                                   |
+| `Radio`        | `<input type="radio">`                                |
+| `DatePicker`   | `<input type="date">`                                 |
 
 ---
 

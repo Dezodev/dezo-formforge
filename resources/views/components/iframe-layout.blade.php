@@ -143,6 +143,17 @@
             Livewire.hook('commit', function ({ succeed }) {
                 succeed(function () { notifyResize(); });
             });
+
+            // Session expirée (419) dans un contexte iframe : recharger silencieusement
+            // au lieu de l'alerte native "This page has expired"
+            Livewire.hook('request', function ({ fail }) {
+                fail(function ({ status, preventDefault }) {
+                    if (status === 419) {
+                        preventDefault();
+                        window.location.reload();
+                    }
+                });
+            });
         });
 
         // Après chargement complet (Filament/Livewire peuvent finir de rendre)
